@@ -1,7 +1,6 @@
 #include <DallasTemperature.h>
 #include <OneWire.h>
 
-// hi
 namespace _10klab {
 namespace temperature {
 #define DOG_SENSOR_PIN 19

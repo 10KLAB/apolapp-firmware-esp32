@@ -10,6 +10,8 @@
             "includePath": [
                 "c:/Users/Delga/Documents/Teo/10K Lab info/Proyectos/Apolapp/Desarrollo/apolapp-firmware-esp32/apolapp-firmware/include",
                 "c:/Users/Delga/Documents/Teo/10K Lab info/Proyectos/Apolapp/Desarrollo/apolapp-firmware-esp32/apolapp-firmware/src",
+                "c:/Users/Delga/Documents/Teo/10K Lab info/Proyectos/Apolapp/Desarrollo/apolapp-firmware-esp32/apolapp-firmware/lib/Arduino-Temperature-Control-Library-master",
+                "c:/Users/Delga/Documents/Teo/10K Lab info/Proyectos/Apolapp/Desarrollo/apolapp-firmware-esp32/apolapp-firmware/.pio/libdeps/esp32doit-devkit-v1/OneWire",
                 "C:/Users/Delga/.platformio/packages/framework-arduinoespressif32/libraries/BLE/src",
                 "C:/Users/Delga/.platformio/packages/framework-arduinoespressif32/tools/sdk/include/config",
                 "C:/Users/Delga/.platformio/packages/framework-arduinoespressif32/tools/sdk/include/app_trace",
@@ -74,7 +76,6 @@
                 "C:/Users/Delga/.platformio/packages/framework-arduinoespressif32/tools/sdk/include/fb_gfx",
                 "C:/Users/Delga/.platformio/packages/framework-arduinoespressif32/cores/esp32",
                 "C:/Users/Delga/.platformio/packages/framework-arduinoespressif32/variants/doitESP32devkitV1",
-                "c:/Users/Delga/Documents/Teo/10K Lab info/Proyectos/Apolapp/Desarrollo/apolapp-firmware-esp32/apolapp-firmware/.pio/libdeps/esp32doit-devkit-v1/OneWire",
                 "C:/Users/Delga/.platformio/packages/framework-arduinoespressif32/libraries/ArduinoOTA/src",
                 "C:/Users/Delga/.platformio/packages/framework-arduinoespressif32/libraries/AsyncUDP/src",
                 "C:/Users/Delga/.platformio/packages/framework-arduinoespressif32/libraries/AzureIoT/src",
@@ -109,6 +110,8 @@
                 "path": [
                     "c:/Users/Delga/Documents/Teo/10K Lab info/Proyectos/Apolapp/Desarrollo/apolapp-firmware-esp32/apolapp-firmware/include",
                     "c:/Users/Delga/Documents/Teo/10K Lab info/Proyectos/Apolapp/Desarrollo/apolapp-firmware-esp32/apolapp-firmware/src",
+                    "c:/Users/Delga/Documents/Teo/10K Lab info/Proyectos/Apolapp/Desarrollo/apolapp-firmware-esp32/apolapp-firmware/lib/Arduino-Temperature-Control-Library-master",
+                    "c:/Users/Delga/Documents/Teo/10K Lab info/Proyectos/Apolapp/Desarrollo/apolapp-firmware-esp32/apolapp-firmware/.pio/libdeps/esp32doit-devkit-v1/OneWire",
                     "C:/Users/Delga/.platformio/packages/framework-arduinoespressif32/libraries/BLE/src",
                     "C:/Users/Delga/.platformio/packages/framework-arduinoespressif32/tools/sdk/include/config",
                     "C:/Users/Delga/.platformio/packages/framework-arduinoespressif32/tools/sdk/include/app_trace",
@@ -173,7 +176,6 @@
                     "C:/Users/Delga/.platformio/packages/framework-arduinoespressif32/tools/sdk/include/fb_gfx",
                     "C:/Users/Delga/.platformio/packages/framework-arduinoespressif32/cores/esp32",
                     "C:/Users/Delga/.platformio/packages/framework-arduinoespressif32/variants/doitESP32devkitV1",
-                    "c:/Users/Delga/Documents/Teo/10K Lab info/Proyectos/Apolapp/Desarrollo/apolapp-firmware-esp32/apolapp-firmware/.pio/libdeps/esp32doit-devkit-v1/OneWire",
                     "C:/Users/Delga/.platformio/packages/framework-arduinoespressif32/libraries/ArduinoOTA/src",
                     "C:/Users/Delga/.platformio/packages/framework-arduinoespressif32/libraries/AsyncUDP/src",
                     "C:/Users/Delga/.platformio/packages/framework-arduinoespressif32/libraries/AzureIoT/src",
