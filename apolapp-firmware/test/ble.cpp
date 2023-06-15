@@ -17,6 +17,7 @@ String boxValue = "0";
 
 #define MESSAGE_CHARACTERISTIC_UUID "6d68efe5-04b6-4a85-abc4-c2670b7bf7fd"
 #define BOX_CHARACTERISTIC_UUID "f27b53ad-c63d-49a0-8c0f-9f297e6cc520"
+                                  
 
 class MyServerCallbacks : public BLEServerCallbacks
 {
