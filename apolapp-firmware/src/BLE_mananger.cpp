@@ -21,21 +21,23 @@ class MyServerCallbacks : public BLEServerCallbacks {
 
   void onDisconnect(BLEServer *pServer) {
     Serial.println("Disconnected");
-    pServer->getAdvertising()->start();
+    pServer->getAdvertising()->start(); // Restart the advertising
   }
 };
 
+// Define a custom class CharacteristicsCallbacks that inherits from BLECharacteristicCallbacks
 class CharacteristicsCallbacks : public BLECharacteristicCallbacks {
   void onWrite(BLECharacteristic *pCharacteristic) {
-
+    // Read the value written to the characteristic
     String fan_speed_char = pCharacteristic->getValue().c_str();
     int fan_speed = fan_speed_char.toInt();
     Serial.println("fan speed= " + String(fan_speed));
-
+    // Call the function to control the fan speed
     _10klab::fan::controlFanSpeed(fan_speed);
 
 
     String command_value = "";
+    //Send the incoming data as answer
     if (pCharacteristic == command_characteristic) {
       command_value = pCharacteristic->getValue().c_str();
       command_characteristic->setValue(
@@ -46,7 +48,7 @@ class CharacteristicsCallbacks : public BLECharacteristicCallbacks {
 };
 
 void initializeBLEService() {
-  String device_name = readDeviceName();
+  String device_name = readDeviceName(); // Read the device name
   // Create the BLE Device
   BLEDevice::init(device_name.c_str());
   // Create the BLE Server
@@ -56,13 +58,13 @@ void initializeBLEService() {
   BLEService *pService = pServer->createService(SERVICE_UUID);
   delay(100);
 
-  // Create a BLE Characteristic
+  // Create a BLE Characteristic for details
   details_characteristic = pService->createCharacteristic(
       DETAILS_CHARACTERISTIC_UUID, BLECharacteristic::PROPERTY_READ |
                                        BLECharacteristic::PROPERTY_WRITE |
                                        BLECharacteristic::PROPERTY_NOTIFY |
                                        BLECharacteristic::PROPERTY_INDICATE);
-
+  // Create a BLE Characteristic for commands
   command_characteristic = pService->createCharacteristic(
       COMMAND_CHARACTERISTIC_UUID, BLECharacteristic::PROPERTY_READ |
                                        BLECharacteristic::PROPERTY_WRITE |
@@ -75,9 +77,11 @@ void initializeBLEService() {
   // Start advertising
   pServer->getAdvertising()->start();
 
-  details_characteristic->setValue("Message one");
+  // Set initial values and callbacks for the details characteristic
+  details_characteristic->setValue("");
   details_characteristic->setCallbacks(new CharacteristicsCallbacks());
 
+  // Set initial values and callbacks for the command characteristic
   command_characteristic->setValue("0");
   command_characteristic->setCallbacks(new CharacteristicsCallbacks());
 
@@ -90,15 +94,16 @@ void sendMessage(String message) {
 }
 
 String readDeviceName() {
-  unsigned char read_mac[6] = {0};
-  char mac_char[18] = {0};
-  esp_read_mac(read_mac, ESP_MAC_WIFI_STA);
+  unsigned char read_mac[6] = {0}; // Create an array to store the MAC address
+  char mac_char[18] = {0}; // Create a character array to store the MAC address as a string
+  esp_read_mac(read_mac, ESP_MAC_WIFI_STA); // Read the MAC address of the device
 
+  // Format the MAC address as a string
   sprintf(mac_char, "%02X %02X %02X %02X %02X %02X", read_mac[0], read_mac[1],
           read_mac[2], read_mac[3], read_mac[4], read_mac[5]);
 
-  String mac_address(mac_char);
-  String device_name = "Apolapp ";
+  String mac_address(mac_char); // Convert the MAC address to a string
+  String device_name = "Apolapp "; // Set the device name prefix
   String complete_name = device_name + mac_address;
 
   Serial.println(complete_name);
@@ -117,7 +122,10 @@ byte calculateChecksum(String data) {
 
 void compactAndSendData(float dog_sensor_temp, float fan_sensor_temp,
                    float battery_level) {
-  String compacted_data = "";
+                    
+  String compacted_data = ""; // Initialize an empty string to store the compacted data
+
+  // Compact the data by concatenating the values with delimiters
   compacted_data = String(dog_sensor_temp) + "$" + String(fan_sensor_temp) +
                    "$" + String(battery_level) + "#";
 
