@@ -4,6 +4,8 @@
 
 namespace _10klab{
     namespace temperature{
+        void initializeTempSensors();
+        float readSensorTemperature(char sensor);
         
     }
 }

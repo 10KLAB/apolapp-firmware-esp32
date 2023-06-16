@@ -17,7 +17,7 @@ void initializeTempSensors() {
 }
 
 float readSensorTemperature(char sensor) {
-  const int read_cycles = 10;
+  const int read_cycles = 2;
   const int read_delay = 100;
   float temperature = 0;
 

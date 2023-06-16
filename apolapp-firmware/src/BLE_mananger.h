@@ -5,9 +5,7 @@
 namespace _10klab{
     namespace BLE{
         void initializeBLEService();
-        void sendMessage();
-        String readDeviceName();
-        String compactData(float dog_sensor_temp, float fan_sensor_temp, float battery_level);
+        void compactAndSendData(float dog_sensor_temp, float fan_sensor_temp, float battery_level);
     }
 }
 

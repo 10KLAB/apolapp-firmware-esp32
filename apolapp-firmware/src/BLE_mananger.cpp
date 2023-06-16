@@ -2,13 +2,13 @@
 #include <BLEDevice.h>
 #include <BLEServer.h>
 #include <BLEUtils.h>
+#include "fan_control.h"
 
 namespace _10klab {
 namespace BLE {
 BLEServer *pServer = NULL;
 BLECharacteristic *details_characteristic = NULL; // data to sen
 BLECharacteristic *command_characteristic = NULL; // fan speed
-String command_value = "0";
 
 #define SERVICE_UUID "5702dfea-d5a7-41d5-97e5-42cf1db4e8cd"
 #define DETAILS_CHARACTERISTIC_UUID "9d5e5b57-35b4-43cc-a31f-2be12b99a874"
@@ -19,18 +19,23 @@ String readDeviceName();
 class MyServerCallbacks : public BLEServerCallbacks {
   void onConnect(BLEServer *pServer) { Serial.println("Connected"); };
 
-  void onDisconnect(BLEServer *pServer) { Serial.println("Disconnected"); }
+  void onDisconnect(BLEServer *pServer) {
+    Serial.println("Disconnected");
+    pServer->getAdvertising()->start();
+  }
 };
 
 class CharacteristicsCallbacks : public BLECharacteristicCallbacks {
   void onWrite(BLECharacteristic *pCharacteristic) {
-    Serial.print("Value Written ");
-    // Serial.println(pCharacteristic->getValue().c_str());
 
     String fan_speed_char = pCharacteristic->getValue().c_str();
     int fan_speed = fan_speed_char.toInt();
     Serial.println("fan speed= " + String(fan_speed));
 
+    _10klab::fan::controlFanSpeed(fan_speed);
+
+
+    String command_value = "";
     if (pCharacteristic == command_characteristic) {
       command_value = pCharacteristic->getValue().c_str();
       command_characteristic->setValue(
@@ -79,8 +84,8 @@ void initializeBLEService() {
   Serial.println("Waiting for a client connection to notify...");
 }
 
-void sendMessage() {
-  details_characteristic->setValue("holito uwu");
+void sendMessage(String message) {
+  details_characteristic->setValue(message.c_str());
   details_characteristic->notify();
 }
 
@@ -110,13 +115,13 @@ byte calculateChecksum(String data) {
   return checksum;
 }
 
-String compactData(float dog_sensor_temp, float fan_sensor_temp,
+void compactAndSendData(float dog_sensor_temp, float fan_sensor_temp,
                    float battery_level) {
   String compacted_data = "";
   compacted_data = String(dog_sensor_temp) + "$" + String(fan_sensor_temp) +
                    "$" + String(battery_level) + "#";
 
-  return compacted_data;
+  sendMessage(compacted_data);
 }
 
 } // namespace BLE
