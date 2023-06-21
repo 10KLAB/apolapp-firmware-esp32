@@ -3,8 +3,8 @@
 
 namespace _10klab {
 namespace temperature {
-#define DOG_SENSOR_PIN 19
-#define FAN_SENSOR_PIN 18
+#define DOG_SENSOR_PIN 22
+#define FAN_SENSOR_PIN 17
 OneWire oneWireDog(DOG_SENSOR_PIN);
 OneWire oneWireFan(FAN_SENSOR_PIN);
 
@@ -39,6 +39,7 @@ float readSensorTemperature(char sensor) {
         delay(read_delay);
   }
   temperature = temperature / read_cycles;
+  // temperature = 20.5; // just for debugg
   return temperature;
 }
 } // namespace temperature

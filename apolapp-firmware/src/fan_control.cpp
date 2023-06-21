@@ -4,8 +4,8 @@ namespace fan {
 #define frequency 5000
 #define pwm_channel 0
 #define pwm_resolution 8
-#define fan_one 22
-#define fan_two 23
+#define fan_one 18
+#define fan_two 5
 
 void controlFanSpeed(int duty_cycle);
 

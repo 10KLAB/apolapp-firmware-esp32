@@ -1,11 +1,13 @@
 #include "BLE_mananger.h"
+#include "fan_control.h"
 #include <BLEDevice.h>
 #include <BLEServer.h>
 #include <BLEUtils.h>
-#include "fan_control.h"
+
 
 namespace _10klab {
 namespace BLE {
+#define LED_ON_BOARD 21
 BLEServer *pServer = NULL;
 BLECharacteristic *details_characteristic = NULL; // data to sen
 BLECharacteristic *command_characteristic = NULL; // fan speed
@@ -15,6 +17,7 @@ BLECharacteristic *command_characteristic = NULL; // fan speed
 #define COMMAND_CHARACTERISTIC_UUID "48fdcfd7-7335-43bc-ade8-e7a0e0cae785"
 
 String readDeviceName();
+void blinkLed(int blink_time);
 
 class MyServerCallbacks : public BLEServerCallbacks {
   void onConnect(BLEServer *pServer) { Serial.println("Connected"); };
@@ -25,7 +28,8 @@ class MyServerCallbacks : public BLEServerCallbacks {
   }
 };
 
-// Define a custom class CharacteristicsCallbacks that inherits from BLECharacteristicCallbacks
+// Define a custom class CharacteristicsCallbacks that inherits from
+// BLECharacteristicCallbacks
 class CharacteristicsCallbacks : public BLECharacteristicCallbacks {
   void onWrite(BLECharacteristic *pCharacteristic) {
     // Read the value written to the characteristic
@@ -35,19 +39,36 @@ class CharacteristicsCallbacks : public BLECharacteristicCallbacks {
     // Call the function to control the fan speed
     _10klab::fan::controlFanSpeed(fan_speed);
 
-
     String command_value = "";
-    //Send the incoming data as answer
+    // Send the incoming data as answer
     if (pCharacteristic == command_characteristic) {
       command_value = pCharacteristic->getValue().c_str();
       command_characteristic->setValue(
           const_cast<char *>(command_value.c_str()));
       command_characteristic->notify();
     }
+
+    blinkLed(100);
   }
 };
 
+void blinkLed(int blink_time) {
+
+  for (int i = 0; i < 3; i++) {
+    digitalWrite(LED_ON_BOARD, HIGH);
+    delay(blink_time);
+    digitalWrite(LED_ON_BOARD, LOW);
+    delay(blink_time);
+  }
+}
+
 void initializeBLEService() {
+
+  pinMode(LED_ON_BOARD, OUTPUT);
+  digitalWrite(LED_ON_BOARD, LOW);
+
+  blinkLed(250);
+
   String device_name = readDeviceName(); // Read the device name
   // Create the BLE Device
   BLEDevice::init(device_name.c_str());
@@ -88,21 +109,33 @@ void initializeBLEService() {
   Serial.println("Waiting for a client connection to notify...");
 }
 
+bool verifyConnectionState(){
+  if (pServer->getConnectedCount() > 0){
+    return true;
+  }
+  else{
+    return false;
+  }
+}
+
 void sendMessage(String message) {
   details_characteristic->setValue(message.c_str());
   details_characteristic->notify();
+  blinkLed(20);
 }
 
 String readDeviceName() {
   unsigned char read_mac[6] = {0}; // Create an array to store the MAC address
-  char mac_char[18] = {0}; // Create a character array to store the MAC address as a string
-  esp_read_mac(read_mac, ESP_MAC_WIFI_STA); // Read the MAC address of the device
+  char mac_char[18] = {
+      0}; // Create a character array to store the MAC address as a string
+  esp_read_mac(read_mac,
+               ESP_MAC_WIFI_STA); // Read the MAC address of the device
 
   // Format the MAC address as a string
   sprintf(mac_char, "%02X %02X %02X %02X %02X %02X", read_mac[0], read_mac[1],
           read_mac[2], read_mac[3], read_mac[4], read_mac[5]);
 
-  String mac_address(mac_char); // Convert the MAC address to a string
+  String mac_address(mac_char);    // Convert the MAC address to a string
   String device_name = "Apolapp "; // Set the device name prefix
   String complete_name = device_name + mac_address;
 
@@ -121,9 +154,10 @@ byte calculateChecksum(String data) {
 }
 
 void compactAndSendData(float dog_sensor_temp, float fan_sensor_temp,
-                   float battery_level) {
-                    
-  String compacted_data = ""; // Initialize an empty string to store the compacted data
+                        float battery_level) {
+
+  String compacted_data =
+      ""; // Initialize an empty string to store the compacted data
 
   // Compact the data by concatenating the values with delimiters
   compacted_data = String(dog_sensor_temp) + "$" + String(fan_sensor_temp) +

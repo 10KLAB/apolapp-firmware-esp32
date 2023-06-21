@@ -47,6 +47,7 @@ float batteryLevel() {
     }
 
     Serial.println("battery level = " + String(battery_level) + "%");
+    // battery_level = 50.5; // just for debug
     return battery_level;
 }
 
