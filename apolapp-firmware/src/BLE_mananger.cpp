@@ -18,6 +18,7 @@ BLECharacteristic *command_characteristic = NULL; // fan speed
 
 String readDeviceName();
 void blinkLed(int blink_time);
+int StorageFanSpeed(bool update_speed, int speed);
 
 class MyServerCallbacks : public BLEServerCallbacks {
   void onConnect(BLEServer *pServer) { Serial.println("Connected"); };
@@ -35,6 +36,7 @@ class CharacteristicsCallbacks : public BLECharacteristicCallbacks {
     // Read the value written to the characteristic
     String fan_speed_char = pCharacteristic->getValue().c_str();
     int fan_speed = fan_speed_char.toInt();
+    StorageFanSpeed(true, fan_speed);
     Serial.println("fan speed= " + String(fan_speed));
     // Call the function to control the fan speed
     _10klab::fan::controlFanSpeed(fan_speed);
@@ -51,6 +53,19 @@ class CharacteristicsCallbacks : public BLECharacteristicCallbacks {
     blinkLed(100);
   }
 };
+
+int StorageFanSpeed(bool update_speed, int speed){
+  static int fan_speed = 0;
+
+  if(update_speed){
+    fan_speed = speed;
+    return fan_speed;
+  }
+  else
+  {
+    return fan_speed;
+  }
+}
 
 void blinkLed(int blink_time) {
 
@@ -155,13 +170,17 @@ byte calculateChecksum(String data) {
 
 void compactAndSendData(float dog_sensor_temp, float fan_sensor_temp,
                         float battery_level) {
+        
 
   String compacted_data =
       ""; // Initialize an empty string to store the compacted data
+    
+  int fan_speed = StorageFanSpeed(false, false);
 
   // Compact the data by concatenating the values with delimiters
-  compacted_data = String(dog_sensor_temp) + "$" + String(fan_sensor_temp) +
-                   "$" + String(battery_level) + "#";
+  //TODO: change the cast for the correct variable type
+  compacted_data = String(int(dog_sensor_temp)) + "$" + String(int(fan_sensor_temp)) +
+                   "$" + String(int(battery_level)) + "$" + String(int(fan_speed));
 
   sendMessage(compacted_data);
 }

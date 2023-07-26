@@ -13,12 +13,12 @@
 // EN_BAT =23
 
 void setup() {
+  _10klab::fan::initializeFanControl();
   Serial.begin(115200);
   Serial.println("start");
   _10klab::BLE::initializeBLEService();
   _10klab::battery::initializeBattery();
   _10klab::temperature::initializeTempSensors();
-  _10klab::fan::initializeFanControl();
 }
 
 void loop() {
@@ -28,17 +28,11 @@ void loop() {
   static float fan_temperature =
       _10klab::temperature::readSensorTemperature('F');
 
-  const int sender_delay = 5000;         // Time delay between data sending
-  static unsigned long sender_timer = 0; // Timer to track data sending
+  const int sender_delay = 500; // Time delay between data sending
+  static unsigned long sender_timer =
+      millis() + sender_delay; // Timer to track data sending
   // Check if the specified time has elapsed to send data
   if (millis() > sender_timer + sender_delay) {
-    Serial.println("------------Temps-------------");
-    dog_temperature = _10klab::temperature::readSensorTemperature(
-        'D'); // Read dog temperature
-    Serial.println("Dog temperature = " + String(dog_temperature));
-    fan_temperature = _10klab::temperature::readSensorTemperature(
-        'F'); // Read fan temperature
-    Serial.println("Fan temperature = " + String(fan_temperature));
 
     if (_10klab::BLE::verifyConnectionState()) {
       _10klab::BLE::compactAndSendData(dog_temperature, fan_temperature,
@@ -47,15 +41,37 @@ void loop() {
 
     sender_timer = millis();
   }
+  /////////////////////////////////////////////// temp read
+  const int temp_read_delay = 5000;
+  static unsigned long temp_timmer = millis() + temp_read_delay;
+  if (millis() >= temp_timmer + temp_read_delay) {
+    dog_temperature = _10klab::temperature::readSensorTemperature(
+        'D'); // Read dog temperature
+
+    fan_temperature = _10klab::temperature::readSensorTemperature(
+        'F'); // Read fan temperature
+    temp_timmer = millis();
+  }
+  ///////////////////////////////////////////// batt read
 
   const int battery_read_delay =
-      10000; // Time delay between battery level measurements
+      5000; // Time delay between battery level measurements
   static unsigned long battery_measurement_timer =
-      0; // Timer to track battery level measurements
+      millis() +
+      battery_read_delay; // Timer to track battery level measurements
   // Check if the specified time has elapsed to measure the battery level
-  if (millis() > battery_measurement_timer + battery_read_delay) {
-    Serial.println("------------Bat-------------");
+  if (millis() >= battery_measurement_timer + battery_read_delay) {
+    // Serial.println("------------Bat-------------");
     battery_level = _10klab::battery::batteryLevel(); // Read battery level
     battery_measurement_timer = millis();
   }
 }
+
+
+    // Serial.println("------------Temps-------------");
+    // dog_temperature = _10klab::temperature::readSensorTemperature(
+    //     'D'); // Read dog temperature
+    // Serial.println("Dog temperature = " + String(dog_temperature));
+    // fan_temperature = _10klab::temperature::readSensorTemperature(
+    //     'F'); // Read fan temperature
+    // Serial.println("Fan temperature = " + String(fan_temperature));

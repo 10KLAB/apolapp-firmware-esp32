@@ -13,7 +13,7 @@ void initializeBattery() {
 int readBatteryADC() {
   digitalWrite(BATTERY_ENABLE, HIGH);
 
-  const int stabilization_delay = 500;
+  const int stabilization_delay = 1000;
 
   delay(stabilization_delay);
 
@@ -21,17 +21,20 @@ int readBatteryADC() {
   int battery_read = 0;
   for (int i = 0; i < read_cycles; i++) {
     battery_read += analogRead(BATTERY_PIN);
+    delay(10);
+    // Serial.println("bat =" + String(battery_read));
   }
 
   digitalWrite(BATTERY_ENABLE, LOW);
 
   battery_read = battery_read / read_cycles;
+  // Serial.println("bat prom =" + String(battery_read));
   return battery_read;
 }
 
 float batteryLevel() {
   const int min_read = 960; // Minimum ADC reading for the battery level (1.6v real meassure)
-  const int max_read = 2800; // Maximum ADC reading for the battery level (3.17v real meassure)
+  const int max_read = 3800; // Maximum ADC reading for the battery level (3.17v real meassure)
 
     // Read the battery level as an ADC value
     float battery_level = readBatteryADC();
@@ -46,8 +49,15 @@ float batteryLevel() {
         battery_level = 100;
     }
 
-    Serial.println("battery level = " + String(battery_level) + "%");
-    // battery_level = 50.5; // just for debug
+  // static int bat_test = 100;
+  //   bat_test-=20;
+  //   if(bat_test <= 0 ){
+  //     bat_test = 100;
+  //   }
+        // Serial.println("battery level = " + String(bat_test) + "%");
+
+    // Serial.println("battery level = " + String(battery_level) + "%");
+    // battery_level = bat_test;
     return battery_level;
 }
 
