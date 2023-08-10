@@ -6,6 +6,7 @@ namespace _10klab{
     namespace battery{
         void initializeBattery();
         float batteryLevel();
+        bool setBatteryTreshold(bool set, bool read);
 
     }
 }

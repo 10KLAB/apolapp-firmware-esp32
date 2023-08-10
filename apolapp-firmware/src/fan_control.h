@@ -6,6 +6,7 @@ namespace _10klab{
     namespace fan{
         void initializeFanControl();
         void controlFanSpeed(int duty_cycle);
+        void trunOffFanByLowBattery();
 
     }
 }

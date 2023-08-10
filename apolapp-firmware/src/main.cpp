@@ -39,6 +39,8 @@ void loop() {
                                        battery_level); // Send data via BLE
     }
 
+    _10klab::fan::trunOffFanByLowBattery();
+
     sender_timer = millis();
   }
   /////////////////////////////////////////////// temp read

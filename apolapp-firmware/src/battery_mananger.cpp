@@ -31,13 +31,24 @@ int readBatteryADC() {
   // Serial.println("bat prom =" + String(battery_read));
   return battery_read;
 }
+bool setBatteryTreshold(bool set, bool read){
+  static bool treshold = true;
+  if(set && !read){
+    treshold = true;
+  }
+  if(!set && !read){
+    treshold = false;
+  }
+  return treshold;
+}
 
 float batteryLevel() {
-  const int min_read = 960; // Minimum ADC reading for the battery level (1.6v real meassure)
-  const int max_read = 3800; // Maximum ADC reading for the battery level (3.17v real meassure)
+  const int min_read = 1565; // Minimum ADC reading for the battery level (1.6v real meassure)
+  const int max_read = 4095; // Maximum ADC reading for the battery level (3.17v real meassure)
 
     // Read the battery level as an ADC value
     float battery_level = readBatteryADC();
+    Serial.println("bat-level" + String(battery_level));
     // Map the battery level from the ADC range to the percentage range (0-100)
     battery_level = map(battery_level, min_read, max_read, 0, 100);
     
@@ -49,6 +60,13 @@ float batteryLevel() {
         battery_level = 100;
     }
 
+    if(battery_level <= 1){
+      setBatteryTreshold(false, false);
+    }
+    else{
+      setBatteryTreshold(true, false);
+    }
+
   // static int bat_test = 100;
   //   bat_test-=20;
   //   if(bat_test <= 0 ){
@@ -57,9 +75,10 @@ float batteryLevel() {
         // Serial.println("battery level = " + String(bat_test) + "%");
 
     // Serial.println("battery level = " + String(battery_level) + "%");
-    // battery_level = bat_test;
+    // battery_level = 10;
     return battery_level;
 }
+
 
 } // namespace battery
 } // namespace _10klab
