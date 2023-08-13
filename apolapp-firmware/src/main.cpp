@@ -12,6 +12,9 @@
 // SENSOR_1 = 22
 // EN_BAT =23
 
+
+
+
 void setup() {
   _10klab::fan::initializeFanControl();
   Serial.begin(115200);
@@ -22,58 +25,45 @@ void setup() {
 }
 
 void loop() {
-  static float battery_level = _10klab::battery::batteryLevel();
-  static float dog_temperature =
-      _10klab::temperature::readSensorTemperature('D');
-  static float fan_temperature =
-      _10klab::temperature::readSensorTemperature('F');
+  static int battery_level = _10klab::battery::batteryLevel();
+  static int dog_temperature = _10klab::temperature::readSensorTemperature('D');
+  static int fan_temperature = _10klab::temperature::readSensorTemperature('F');
+  static int fan_speed = _10klab::BLE::StorageFanSpeed(false, false);
+  static int prev_dog_temperature = dog_temperature;
+  static int prev_fan_temperature = fan_temperature;
+  static int prev_battery_level = battery_level;
+  static int prev_fan_speed = fan_speed;
 
-  const int sender_delay = 500; // Time delay between data sending
-  static unsigned long sender_timer =
-      millis() + sender_delay; // Timer to track data sending
-  // Check if the specified time has elapsed to send data
-  if (millis() > sender_timer + sender_delay) {
 
-    if (_10klab::BLE::verifyConnectionState()) {
-      _10klab::BLE::compactAndSendData(dog_temperature, fan_temperature,
-                                       battery_level); // Send data via BLE
-    }
+/////////////////////////////////////////////////////////////////////////////////////////////////
+fan_speed = _10klab::BLE::StorageFanSpeed(false, false);
+if((dog_temperature != prev_dog_temperature) || (fan_temperature != prev_fan_temperature) || (battery_level != prev_battery_level) || fan_speed != prev_fan_speed){
+  Serial.println("data changed");
+  _10klab::BLE::compactAndSendData(dog_temperature, fan_temperature, battery_level);
+  prev_dog_temperature = dog_temperature;
+  prev_fan_temperature = fan_temperature;
+  prev_battery_level = battery_level;
+  prev_fan_speed = fan_speed;
+}
 
-    _10klab::fan::trunOffFanByLowBattery();
-
-    sender_timer = millis();
-  }
-  /////////////////////////////////////////////// temp read
+  /////////////////////////////////////////////// variables reading
   const int temp_read_delay = 5000;
   static unsigned long temp_timmer = millis() + temp_read_delay;
   if (millis() >= temp_timmer + temp_read_delay) {
-    dog_temperature = _10klab::temperature::readSensorTemperature(
-        'D'); // Read dog temperature
-
-    fan_temperature = _10klab::temperature::readSensorTemperature(
-        'F'); // Read fan temperature
+    // dog_temperature = _10klab::temperature::readSensorTemperature('D'); // Read dog temperature
+    // fan_temperature = _10klab::temperature::readSensorTemperature('F'); // Read fan temperature
+    // battery_level = _10klab::battery::batteryLevel(); // Read battery level
+    battery_level = random(20,100);
     temp_timmer = millis();
   }
-  ///////////////////////////////////////////// batt read
 
-  const int battery_read_delay =
-      5000; // Time delay between battery level measurements
-  static unsigned long battery_measurement_timer =
-      millis() +
-      battery_read_delay; // Timer to track battery level measurements
-  // Check if the specified time has elapsed to measure the battery level
-  if (millis() >= battery_measurement_timer + battery_read_delay) {
-    // Serial.println("------------Bat-------------");
-    battery_level = _10klab::battery::batteryLevel(); // Read battery level
-    battery_measurement_timer = millis();
+/////////////////////////////////////////////////send data when phone connect
+
+  if(_10klab::BLE::newConnection(false, false)){
+    Serial.println("on sender by connection");
+    _10klab::BLE::compactAndSendData(dog_temperature, fan_temperature, battery_level);
+    _10klab::BLE::newConnection(false, true);
   }
+
+  _10klab::fan::trunOffFanByLowBattery();
 }
-
-
-    // Serial.println("------------Temps-------------");
-    // dog_temperature = _10klab::temperature::readSensorTemperature(
-    //     'D'); // Read dog temperature
-    // Serial.println("Dog temperature = " + String(dog_temperature));
-    // fan_temperature = _10klab::temperature::readSensorTemperature(
-    //     'F'); // Read fan temperature
-    // Serial.println("Fan temperature = " + String(fan_temperature));

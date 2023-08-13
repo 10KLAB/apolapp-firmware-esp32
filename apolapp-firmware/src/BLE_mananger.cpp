@@ -5,6 +5,7 @@
 #include <BLEUtils.h>
 
 
+
 namespace _10klab {
 namespace BLE {
 #define LED_ON_BOARD 21
@@ -16,12 +17,27 @@ BLECharacteristic *command_characteristic = NULL; // fan speed
 #define DETAILS_CHARACTERISTIC_UUID "9d5e5b57-35b4-43cc-a31f-2be12b99a874"
 #define COMMAND_CHARACTERISTIC_UUID "48fdcfd7-7335-43bc-ade8-e7a0e0cae785"
 
+
+
 String readDeviceName();
 void blinkLed(int blink_time);
 int StorageFanSpeed(bool update_speed, int speed);
 
+bool newConnection(bool state, bool writte){
+  static bool keep_state = false;
+  if(writte){
+    keep_state = state;
+  }
+  return keep_state;
+}
+
 class MyServerCallbacks : public BLEServerCallbacks {
-  void onConnect(BLEServer *pServer) { Serial.println("Connected"); };
+  void onConnect(BLEServer *pServer) { 
+
+    Serial.println("Connected"); 
+    newConnection(true, true);
+
+    };
 
   void onDisconnect(BLEServer *pServer) {
     Serial.println("Disconnected");
@@ -41,16 +57,16 @@ class CharacteristicsCallbacks : public BLECharacteristicCallbacks {
     // Call the function to control the fan speed
     _10klab::fan::controlFanSpeed(fan_speed);
 
-    String command_value = "";
-    // Send the incoming data as answer
-    if (pCharacteristic == command_characteristic) {
-      command_value = pCharacteristic->getValue().c_str();
-      command_characteristic->setValue(
-          const_cast<char *>(command_value.c_str()));
-      command_characteristic->notify();
-    }
+    // String command_value = "";
+    // // Send the incoming data as answer
+    // if (pCharacteristic == command_characteristic) {
+    //   command_value = pCharacteristic->getValue().c_str();
+    //   command_characteristic->setValue(
+    //       const_cast<char *>(command_value.c_str()));
+    //   command_characteristic->notify();
+    // }
 
-    blinkLed(100);
+    // blinkLed(100);
   }
 };
 
@@ -136,7 +152,7 @@ bool verifyConnectionState(){
 void sendMessage(String message) {
   details_characteristic->setValue(message.c_str());
   details_characteristic->notify();
-  blinkLed(20);
+  // blinkLed(20);
 }
 
 String readDeviceName() {

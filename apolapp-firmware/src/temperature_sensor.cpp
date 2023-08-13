@@ -16,10 +16,10 @@ void initializeTempSensors() {
   fanSensor.begin();
 }
 
-float readSensorTemperature(char sensor) {
+int readSensorTemperature(char sensor) {
   const int read_cycles = 1;
   const int read_delay = 100;
-  float temperature = 0;
+  int temperature = 0;
 
   static int bat_test = 32;
 

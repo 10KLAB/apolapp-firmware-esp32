@@ -48,7 +48,7 @@ float batteryLevel() {
 
     // Read the battery level as an ADC value
     float battery_level = readBatteryADC();
-    Serial.println("bat-level" + String(battery_level));
+    // Serial.println("bat-level" + String(battery_level));
     // Map the battery level from the ADC range to the percentage range (0-100)
     battery_level = map(battery_level, min_read, max_read, 0, 100);
     
