@@ -50,10 +50,10 @@ if((dog_temperature != prev_dog_temperature) || (fan_temperature != prev_fan_tem
   const int temp_read_delay = 5000;
   static unsigned long temp_timmer = millis() + temp_read_delay;
   if (millis() >= temp_timmer + temp_read_delay) {
-    // dog_temperature = _10klab::temperature::readSensorTemperature('D'); // Read dog temperature
-    // fan_temperature = _10klab::temperature::readSensorTemperature('F'); // Read fan temperature
-    // battery_level = _10klab::battery::batteryLevel(); // Read battery level
-    battery_level = random(20,100);
+    dog_temperature = _10klab::temperature::readSensorTemperature('D'); // Read dog temperature
+    fan_temperature = _10klab::temperature::readSensorTemperature('F'); // Read fan temperature
+    battery_level = _10klab::battery::batteryLevel(); // Read battery level
+    // battery_level = random(20,100);
     temp_timmer = millis();
   }
 
