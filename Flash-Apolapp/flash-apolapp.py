@@ -38,14 +38,18 @@ print("""
       
       """)
 
-port = input("Enter the COM port of your ESP32 (e.g., COM1): ")
-start = input("Do you want to start the upload? (y/n): ").strip().lower()
+port = input("[?] Enter the COM port of your Aolapp programmer (e.g., COM1): ")
+
+print('\n[!] 1)Press the "EN" and "BOOT" buttons simultaneously for a few seconds.')
+print('[!] 2)Release the "EN" button and continue pressing the "BOOT" button for a few seconds.')
+print('[!] 3)When the firmware loading begins, release the "BOOT" button.\n')
+start = input("[?] Do you want to start the upload? (y/n): ").strip().lower()
 if start != "y":
     sys.exit()
 
-def upload_firmware():
-    # Get user input for the COM port
+first_message = True
 
+def upload_firmware():
     # Replace these variables with your own values
     baud_rate = 460800  # The baud rate of your ESP
     bin_file = "firmware.bin"  # Replace with the path to your .bin file
@@ -58,6 +62,9 @@ def upload_firmware():
     batch_file_path = "upload_batch.bat"
     with open(batch_file_path, "w") as batch_file:
         batch_file.write(batch_file_content)
+    
+    
+
 
     try:
         # Execute the batch file
@@ -67,9 +74,16 @@ def upload_firmware():
         print(f"Upload failed: {e}")
 
 while True:
+
     upload_firmware()
     
     # Ask if the user wants to upload to another ESP
-    another_upload = input("Do you want to upload firmware to another ESP? (y/n): ").strip().lower()
+
+    print('\n[!] 1)Press the "EN" and "BOOT" buttons simultaneously for a few seconds.')
+    print('[!] 2)Release the "EN" button and continue pressing the "BOOT" button for a few seconds.')
+    print('[!] 3)When the firmware loading begins, release the "BOOT" button.\n')
+
+    
+    another_upload = input("[?] Do you want to upload firmware to another ESP? (y/n): ").strip().lower()
     if another_upload != "y":
         break
